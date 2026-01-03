@@ -5,9 +5,9 @@ import { FaWhatsapp } from 'react-icons/fa';
 import LogoTipo from "../../assets/Logotipo_Transparente.png";
 import { useCart } from '../../context/CartContext';
 import { CartSidebar } from './CartSidebar';
-import { useToast } from '../../context/ToastContext';
 import { InstallationsGallery } from '../ui/InstallationsGallery';
 import { HoursModal } from '../ui/HoursModal';
+import { WHATSAPP_NUMBER } from '../../config/constants';
 export function Navbar() {
     // Estado para el menú izquierdo (Hamburguesa)
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -22,8 +22,7 @@ export function Navbar() {
     const [isHoursOpen, setIsHoursOpen] = useState(false);
 
     //Estado y hook del carrito
-    const { cart, totalItems } = useCart();
-    const { addToast } = useToast();
+    const { totalItems } = useCart();
 
 
     // Bloquear scroll si CUALQUIERA de los dos está abierto
@@ -37,8 +36,8 @@ export function Navbar() {
     }, [isMenuOpen, isCartOpen, isGalleryOpen]);
 
     const navLinks = [
-        { name: 'Llamar', icon: Phone, action: () => window.open(`tel:+573233353753`, '_self') },
-        { name: 'WhatsApp', icon: FaWhatsapp, action: () => window.open(`https://wa.me/573233353753`, '_blank') },
+        { name: 'Llamar', icon: Phone, action: () => window.open(`tel:+${WHATSAPP_NUMBER}`, '_self') },
+        { name: 'WhatsApp', icon: FaWhatsapp, action: () => window.open(`https://wa.me/${WHATSAPP_NUMBER}`, '_blank') },
         { name: 'Ubicación', icon: MapPin, action: () => window.open('https://www.google.com/maps/search/?api=1&query=El+Punto+del+Sabor+Valledupar', '_blank') },
         {
             name: 'Horarios',
