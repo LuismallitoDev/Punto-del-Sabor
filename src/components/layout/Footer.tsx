@@ -36,10 +36,10 @@ export function Footer() {
                                 La mejor comida rápida costeña. Empanadas, papas rellenas, buñuelos, patacones y más preparados con la tradición y el sabor de casa.
                             </p>
                             <div className="flex gap-4 mt-4">
-                                <a href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gold hover:bg-gold hover:text-black transition-all duration-300">
+                                <a href="https://www.instagram.com/elpuntodelsabor.vup/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gold hover:bg-gold hover:text-black transition-all duration-300">
                                     <Instagram size={18} />
                                 </a>
-                                <a href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gold hover:bg-gold hover:text-black transition-all duration-300">
+                                <a href="https://www.facebook.com/mega.alitas.2025" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gold hover:bg-gold hover:text-black transition-all duration-300">
                                     <Facebook size={18} />
                                 </a>
                             </div>

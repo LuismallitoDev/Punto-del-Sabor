@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion'; // Importar AnimatePresence para animaciones suaves al filtrar
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown } from 'lucide-react';
 import { HeroCarousel } from '../components/ui/HeroCarousel';
 import { CategoryNav } from '../components/features/menu/CategoryNav';
 import { FoodPlate } from '../components/features/menu/FoodPlate';
 import { products } from '../data/products';
 
 export function Home() {
-    
+
     const [selectedCategory, setSelectedCategory] = useState('all');
 
     // 2. Lógica de filtrado
@@ -32,6 +33,41 @@ export function Home() {
                         selectedCategory={selectedCategory}
                         onSelectCategory={setSelectedCategory}
                     />
+
+                    {/* --- NUEVO: FLECHAS INDICADORAS DE SCROLL (Solo Móvil) --- */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 1, duration: 1 }} // Aparecen suavemente después de que carga la página
+                        className="flex flex-col items-center justify-center pb-10 -mt-4 md:hidden relative z-10"
+                    >
+                        {/* Texto opcional */}
+                        <p className="text-gold/50 text-[10px] uppercase tracking-[0.2em] mb-2 animate-pulse">
+                            Desliza hacia abajo
+                        </p>
+
+                        {/* Las dos flechas animadas */}
+                        {[0, 1].map((index) => (
+                            <motion.div
+                                key={index}
+                                animate={{
+                                    y: [0, 10, 20],    // Movimiento hacia abajo
+                                    opacity: [0, 1, 0] // Aparece y desaparece
+                                }}
+                                transition={{
+                                    duration: 1.8,
+                                    repeat: Infinity,
+                                    delay: index * 0.3, // El truco: un delay entre flechas para efecto ola
+                                    ease: "easeInOut"
+                                }}
+                                className="-mt-4 first:mt-0" // Superponemos un poco la segunda flecha
+                            >
+                                <ChevronDown size={32} className="text-gold drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]" />
+                            </motion.div>
+                        ))}
+                    </motion.div>
+                    {/* --------------------------------------------------------- */}
+
                 </div>
             </section>
 
@@ -42,18 +78,15 @@ export function Home() {
 
                     {/* GRID DE PRODUCTOS FILTRADOS */}
                     <motion.div
-                        layout // "layout" hace que los elementos se muevan suavemente al filtrar
+                        layout
                         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16 md:gap-y-20"
                     >
                         <AnimatePresence mode='popLayout'>
                             {filteredProducts.map((product) => (
+                                
                                 <FoodPlate
                                     key={product.id}
-                                    title={product.name}
-                                    description={product.description}
-                                    price={product.price}
-                                    image={product.image}
-                                    // Quitamos el delay fijo para que al filtrar no se sienta lento
+                                    product={product} 
                                     delay={0}
                                 />
                             ))}
