@@ -5,7 +5,7 @@ import { HeroCarousel } from '../components/ui/HeroCarousel';
 import { CategoryNav } from '../components/features/menu/CategoryNav';
 import { FoodPlate } from '../components/features/menu/FoodPlate';
 import { products } from '../data/products';
-
+import { Link } from 'react-scroll';
 export function Home() {
 
     const [selectedCategory, setSelectedCategory] = useState('all');
@@ -71,7 +71,7 @@ export function Home() {
                 </div>
             </section>
 
-            <section className="py-12 relative overflow-hidden min-h-[500px]">
+            <section className="py-12 relative overflow-hidden min-h-[500px]" id='menu'>
                 <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-gray-900/30 via-[#050505] to-[#050505] -z-10" />
 
                 <div className="container mx-auto px-4">
@@ -83,10 +83,10 @@ export function Home() {
                     >
                         <AnimatePresence mode='popLayout'>
                             {filteredProducts.map((product) => (
-                                
+
                                 <FoodPlate
                                     key={product.id}
-                                    product={product} 
+                                    product={product}
                                     delay={0}
                                 />
                             ))}
@@ -101,14 +101,16 @@ export function Home() {
                     )}
 
                     <div className="mt-24 text-center">
-                        <motion.button
-                            onClick={() => setSelectedCategory('all')} // Botón ver todo resetea el filtro
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="px-10 py-4 border border-gold/50 text-gold hover:bg-gold hover:text-black transition-all duration-300 uppercase tracking-widest text-xs font-semibold"
-                        >
-                            Ver Menú Completo
-                        </motion.button>
+                        <Link to='menu'>
+                            <motion.button
+                                onClick={() => setSelectedCategory('all')} // Botón ver todo resetea el filtro
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="px-10 py-4 border border-gold/50 text-gold hover:bg-gold hover:text-black transition-all duration-300 uppercase tracking-widest text-xs font-semibold"
+                            >
+                                Ver Menú Completo
+                            </motion.button>
+                        </Link>
                     </div>
                 </div>
             </section>

@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // <--- Importamos useEffect
 import { Instagram, Facebook, MapPin, Clock, Phone } from 'lucide-react';
-import { FaWhatsapp } from 'react-icons/fa'; // <--- Importamos el icono de marca
+import { FaWhatsapp } from 'react-icons/fa';
 import LogoTipo from "../../assets/Logotipo_Transparente.png";
 import { WHATSAPP_NUMBER } from '../../config/constants';
 import { LegalModal } from '../ui/LegalModal';
@@ -9,6 +9,26 @@ import { legalContent } from '../../data/legalInfo';
 export function Footer() {
     const [legalModalOpen, setLegalModalOpen] = useState(false);
     const [legalType, setLegalType] = useState<'privacy' | 'terms' | null>(null);
+    
+    // 1. ESTADO PARA SABER SI ESTÁ ABIERTO
+    const [isOpenNow, setIsOpenNow] = useState(false);
+
+    // 2. LÓGICA DE TIEMPO (Igual a la del Modal)
+    useEffect(() => {
+        const checkTime = () => {
+            const now = new Date();
+            const hour = now.getHours(); // Hora actual (0-23)
+            
+            // Abierto si la hora es mayor o igual a 16 (4 PM) Y menor a 22 (10 PM)
+            const isOpen = hour >= 16 && hour < 22;
+            
+            setIsOpenNow(isOpen);
+        };
+
+        checkTime(); // Chequear al cargar
+        const interval = setInterval(checkTime, 60000); // Re-chequear cada minuto
+        return () => clearInterval(interval);
+    }, []);
 
     const openLegal = (type: 'privacy' | 'terms') => {
         setLegalType(type);
@@ -79,13 +99,20 @@ export function Footer() {
                                 </div>
                             </div>
 
-                            {/* Indicador Abierto */}
-                            <div className="flex items-center gap-2 text-green-500 text-xs font-bold tracking-wider uppercase border border-green-500/20 bg-green-500/10 px-3 py-1 rounded-full animate-pulse">
-                                <Clock size={12} />
-                                Abierto Ahora
-                            </div>
+                            {/* 3. INDICADOR DINÁMICO (Abierto / Cerrado) */}
+                            {isOpenNow ? (
+                                <div className="flex items-center gap-2 text-green-500 text-xs font-bold tracking-wider uppercase border border-green-500/20 bg-green-500/10 px-3 py-1 rounded-full animate-pulse">
+                                    <Clock size={12} />
+                                    Abierto Ahora
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-2 text-red-500 text-xs font-bold tracking-wider uppercase border border-red-500/20 bg-red-500/10 px-3 py-1 rounded-full">
+                                    <Clock size={12} />
+                                    Cerrado Ahora
+                                </div>
+                            )}
 
-                            {/* --- BOTÓN WHATSAPP NUEVO --- */}
+                            {/* --- BOTÓN WHATSAPP --- */}
                             <button
                                 onClick={handleWhatsAppClick}
                                 className="group flex items-center gap-2 bg-[#25D366] hover:bg-[#128C7E] text-black hover:text-white px-5 py-2.5 rounded-full font-bold uppercase tracking-widest text-xs transition-all duration-300 shadow-[0_0_15px_rgba(37,211,102,0.2)] hover:shadow-[0_0_20px_rgba(37,211,102,0.4)] mt-2"
@@ -98,7 +125,7 @@ export function Footer() {
 
                     {/* COPYRIGHT & LEGAL LINKS */}
                     <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-600 uppercase tracking-wider">
-                        <p>&copy; 2024 El Punto del Sabor. Todos los derechos reservados.</p>
+                        <p>&copy; 2026 El Punto del Sabor. Todos los derechos reservados.</p>
                         <div className="flex gap-6">
                             <button
                                 onClick={() => openLegal('privacy')}

@@ -107,7 +107,7 @@ export function HeroCarousel() {
                                     transition={{ delay: 1.1, duration: 0.8 }}
                                 >
                                     <Link
-                                        to="menu-section"
+                                        to="menu"
                                         smooth={true}
                                         duration={800}
                                         offset={-100}

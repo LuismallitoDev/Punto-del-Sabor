@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Tag } from 'lucide-react';
-import { Product } from './ProductModal'; 
+import { Product } from './ProductModal';
+import { useBlockScroll } from '../../utils/useBlockScroll';
 
 interface ProductDetailsModalProps {
     isOpen: boolean;
@@ -9,6 +10,10 @@ interface ProductDetailsModalProps {
 }
 
 export function ProductDetailsModal({ isOpen, onClose, product }: ProductDetailsModalProps) {
+
+    useBlockScroll(isOpen);
+    // ---------------------------------------
+
     if (!product) return null;
 
     return (
@@ -26,7 +31,7 @@ export function ProductDetailsModal({ isOpen, onClose, product }: ProductDetails
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.9, opacity: 0, y: 20 }}
                         onClick={(e) => e.stopPropagation()}
-                        className="bg-[#111] border border-white/10 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col relative"
+                        className="bg-[#111] border border-white/10 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col relative max-h-[90vh]" // Agregué max-h-[90vh] por seguridad
                     >
                         {/* Botón Cerrar */}
                         <button
@@ -37,7 +42,7 @@ export function ProductDetailsModal({ isOpen, onClose, product }: ProductDetails
                         </button>
 
                         {/* Imagen Grande */}
-                        <div className="w-full h-64 md:h-80 relative">
+                        <div className="w-full h-64 md:h-80 relative shrink-0"> {/* shrink-0 evita que la imagen se aplaste */}
                             <img
                                 src={product.image}
                                 alt={product.name}
@@ -46,9 +51,9 @@ export function ProductDetailsModal({ isOpen, onClose, product }: ProductDetails
                             <div className="absolute inset-0 bg-gradient-to-t from-[#111] to-transparent" />
                         </div>
 
-                        {/* Contenido */}
-                        <div className="p-8 -mt-12 relative z-10">
-                            {/* Etiqueta Categoría (si la tienes en tus datos, si no, puedes quitar esto) */}
+                        {/* Contenido con Scroll interno si es necesario */}
+                        <div className="p-8 -mt-12 relative z-10 overflow-y-auto custom-scrollbar">
+                            {/* Etiqueta Categoría */}
                             {product.category && (
                                 <div className="inline-flex items-center gap-1 bg-gold/20 border border-gold/30 rounded-full px-3 py-1 mb-4">
                                     <Tag size={12} className="text-gold" />
@@ -68,7 +73,7 @@ export function ProductDetailsModal({ isOpen, onClose, product }: ProductDetails
                                 {product.description}
                             </p>
 
-                            {/* Nota adicional decorativa */}
+                            {/* Nota adicional */}
                             <div className="mt-8 p-4 bg-white/5 rounded-lg border border-white/5 text-center">
                                 <p className="text-gray-500 text-sm italic">
                                     "Preparado al instante con ingredientes frescos."

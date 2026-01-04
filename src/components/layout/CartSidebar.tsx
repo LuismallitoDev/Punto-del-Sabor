@@ -4,6 +4,7 @@ import { X, Trash2, ChevronRight, ShoppingBag, ChevronDown, ChevronUp } from 'lu
 import { useCart } from '../../context/CartContext';
 import { sendOrderToWhatsapp } from '../../utils/whatsapp';
 import { useToast } from '../../context/ToastContext';
+import { useBlockScroll } from '../../utils/useBlockScroll';
 
 interface CartSidebarProps {
     isOpen: boolean;
@@ -36,10 +37,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     // ------------------------------------------
 
     // Bloquear scroll
-    useEffect(() => {
-        if (isOpen) document.body.style.overflow = 'hidden';
-        else document.body.style.overflow = 'unset';
-    }, [isOpen]);
+    useBlockScroll(isOpen);
 
     const handleConfirm = () => {
         if (!address.trim()) {

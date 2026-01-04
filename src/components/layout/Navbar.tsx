@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ShoppingBag, Phone, MapPin, Clock, Images } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
@@ -8,6 +8,7 @@ import { CartSidebar } from './CartSidebar';
 import { InstallationsGallery } from '../ui/InstallationsGallery';
 import { HoursModal } from '../ui/HoursModal';
 import { WHATSAPP_NUMBER } from '../../config/constants';
+import { useBlockScroll } from '../../utils/useBlockScroll';
 export function Navbar() {
     // Estado para el menú izquierdo (Hamburguesa)
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -24,16 +25,12 @@ export function Navbar() {
     //Estado y hook del carrito
     const { totalItems } = useCart();
 
+    useBlockScroll(isMenuOpen);
+    useBlockScroll(isCartOpen);
+    useBlockScroll(isGalleryOpen);
+    useBlockScroll(isHoursOpen);
 
-    // Bloquear scroll si CUALQUIERA de los dos está abierto
-    useEffect(() => {
-        if (isMenuOpen || isCartOpen || isGalleryOpen) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'unset';
-        }
-        return () => { document.body.style.overflow = 'unset'; };
-    }, [isMenuOpen, isCartOpen, isGalleryOpen]);
+
 
     const navLinks = [
         { name: 'Llamar', icon: Phone, action: () => window.open(`tel:+${WHATSAPP_NUMBER}`, '_self') },
@@ -143,8 +140,8 @@ export function Navbar() {
                                 <div className="flex flex-col gap-4">
                                     <img src={LogoTipo} alt="Logo Footer" className="w-20 opacity-50 grayscale mb-2" />
                                     <div className="flex gap-6 text-xs text-white/50 tracking-widest uppercase">
-                                        <a href="#" className="hover:text-gold transition-colors">Instagram</a>
-                                        <a href="#" className="hover:text-gold transition-colors">Facebook</a>
+                                        <a href="https://www.instagram.com/elpuntodelsabor.vup/" target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-colors">Instagram</a>
+                                        <a href="https://www.facebook.com/mega.alitas.2025" target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-colors">Facebook</a>
                                     </div>
                                 </div>
                             </div>
