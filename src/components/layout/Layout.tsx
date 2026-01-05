@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
-
+import { StoreStatusAlert } from '../ui/StoreStatusAlert';
 interface LayoutProps {
     children: ReactNode;
 }
@@ -12,7 +12,7 @@ export function Layout({ children }: LayoutProps) {
 
             {/* Background Texture Layer (Optimized opacity for mobile readability) */}
             <div className="fixed inset-0 bg-noise pointer-events-none z-0 mix-blend-overlay opacity-40 md:opacity-50" />
-
+            <StoreStatusAlert />
             {/* Navbar (Fixed position managed inside Navbar component styling if needed, or stick here) */}
             <Navbar />
 

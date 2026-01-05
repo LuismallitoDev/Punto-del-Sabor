@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Trash2, ChevronRight, ShoppingBag, ChevronDown, ChevronUp } from 'lucide-react';
+import { X, Trash2, ChevronRight, ShoppingBag, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { sendOrderToWhatsapp } from '../../utils/whatsapp';
 import { useToast } from '../../context/ToastContext';
 import { useBlockScroll } from '../../utils/useBlockScroll';
 import { formatCurrency } from '../../utils/format';
+import { supabase } from '../../lib/supabase'; // <--- 1. Importante: Conexión a BD
 
 interface CartSidebarProps {
     isOpen: boolean;
@@ -13,12 +14,15 @@ interface CartSidebarProps {
 }
 
 export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
-    const { cart, removeFromCart, totalPrice } = useCart();
+    const { cart, removeFromCart, totalPrice } = useCart(); 
     const { addToast } = useToast();
 
     // Estados del formulario
+    const [name, setName] = useState('');      
+    const [phone, setPhone] = useState('');     
     const [address, setAddress] = useState('');
     const [notes, setNotes] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Lógica del Dropdown
     const [paymentMethod, setPaymentMethod] = useState('Efectivo');
@@ -38,16 +42,66 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
     useBlockScroll(isOpen);
 
-    const handleConfirm = () => {
+    const handleConfirm = async () => {
+        // 1. Validaciones
+        if (!name.trim()) {
+            addToast("Por favor ingresa tu nombre", "error");
+            return;
+        }
+        if (!phone.trim()) {
+            addToast("Por favor ingresa tu teléfono", "error");
+            return;
+        }
         if (!address.trim()) {
             addToast("Por favor ingresa tu dirección de entrega", "error");
-            document.querySelector('input')?.focus();
             return;
         }
 
-        sendOrderToWhatsapp(cart, { address, paymentMethod, notes });
+        setIsSubmitting(true);
+
+        // 2. GUARDAR EN SUPABASE (Shadow Order) 👻
+        try {
+            const orderItems = cart.map(item => ({
+                id: item.id,
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity
+            }));
+
+            // Intentamos guardar, pero no bloqueamos si falla
+            const { error } = await supabase.from('orders').insert({
+                customer_name: name,
+                customer_phone: phone,
+                delivery_type: 'domicilio',
+                address: address,
+                payment_method: paymentMethod.toLowerCase(),
+                items: orderItems,
+                total: totalPrice,
+                status: 'pendiente'
+            });
+
+            if (error) {
+                console.error("Error guardando backup del pedido:", error);
+                // No mostramos error al usuario para no interrumpir la venta
+            }
+
+        } catch (err) {
+            console.error("Error silencioso al guardar orden:", err);
+        }
+
+        // 3. FLUJO ORIGINAL A WHATSAPP
+        // Pasamos el nombre también a la función de WhatsApp para que el mensaje sea más personal
+        // (Asegúrate de actualizar tu función sendOrderToWhatsapp para recibir 'name' si quieres, o déjalo en notas)
+        const additionalNotes = `Cliente: ${name} (${phone})\nNotas: ${notes}`;
+
+        sendOrderToWhatsapp(cart, { address, paymentMethod, notes: additionalNotes });
+
         addToast("¡Pedido procesado! Redirigiendo a WhatsApp...", "success");
+        setIsSubmitting(false);
         onClose();
+
+        // Opcional: Limpiar el carrito después de enviar
+        // clearCart(); 
     };
 
     const sidebarVariants = {
@@ -106,13 +160,11 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                                             <div>
                                                 <p className="text-white font-medium">{item.name}</p>
                                                 <p className="text-sm text-gray-400">
-                                                    {/* USO DE formatCurrency */}
                                                     {item.quantity} x ${formatCurrency(item.price)}
                                                 </p>
                                             </div>
                                             <div className="flex items-center gap-3">
                                                 <span className="text-gold font-bold">
-                                                    {/* USO DE formatCurrency (Subtotal) */}
                                                     ${formatCurrency(item.price * item.quantity)}
                                                 </span>
                                                 <button onClick={() => removeFromCart(item.id)} className="text-gray-600 hover:text-red-500 transition-colors">
@@ -125,7 +177,6 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                                     <div className="flex justify-between items-center pt-4 border-t border-white/10 mt-4">
                                         <span className="text-gray-400 uppercase tracking-widest text-xs">Total Estimado</span>
                                         <span className="text-2xl font-serif text-gold font-bold">
-                                            {/* USO DE formatCurrency (Total) */}
                                             ${formatCurrency(totalPrice)}
                                         </span>
                                     </div>
@@ -138,6 +189,30 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                                     <h3 className="text-gold text-sm uppercase tracking-widest font-bold mb-4">
                                         Datos de Entrega
                                     </h3>
+
+                                    {/* NUEVOS CAMPOS: NOMBRE Y TELEFONO */}
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-xs text-gray-400 uppercase">Nombre</label>
+                                            <input
+                                                type="text"
+                                                value={name}
+                                                onChange={(e) => setName(e.target.value)}
+                                                placeholder="Tu nombre"
+                                                className="w-full bg-white/5 border border-white/10 rounded p-3 text-white focus:border-gold focus:outline-none transition-colors placeholder:text-gray-600"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-xs text-gray-400 uppercase">Teléfono</label>
+                                            <input
+                                                type="tel"
+                                                value={phone}
+                                                onChange={(e) => setPhone(e.target.value)}
+                                                placeholder="Ej: 3001234567"
+                                                className="w-full bg-white/5 border border-white/10 rounded p-3 text-white focus:border-gold focus:outline-none transition-colors placeholder:text-gray-600"
+                                            />
+                                        </div>
+                                    </div>
 
                                     <div className="space-y-2">
                                         <label className="text-xs text-gray-400 uppercase">Dirección completa</label>
@@ -213,9 +288,18 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                                 <div className="space-y-3">
                                     <button
                                         onClick={handleConfirm}
-                                        className="w-full bg-gold text-black font-bold py-4 uppercase tracking-widest hover:bg-white transition-colors flex items-center justify-center gap-2"
+                                        disabled={isSubmitting}
+                                        className="w-full bg-gold text-black font-bold py-4 uppercase tracking-widest hover:bg-white transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                                     >
-                                        Confirmar Pedido <ChevronRight size={18} />
+                                        {isSubmitting ? (
+                                            <>
+                                                <Loader2 className="animate-spin" size={18} /> Procesando...
+                                            </>
+                                        ) : (
+                                            <>
+                                                Confirmar Pedido <ChevronRight size={18} />
+                                            </>
+                                        )}
                                     </button>
                                     <button
                                         onClick={onClose}
@@ -234,7 +318,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                             )}
                             <p className="text-[10px] text-gray-500 text-center mt-4 leading-relaxed">
                                 * Al hacer clic en "Confirmar", serás redirigido a WhatsApp.
-                                Todos los pedidos deben ser validados por nuestro equipo.
+                                Todos los pedidos deben ser validados por nuestro equipo. Domicilios fuera de Don Carmelo a partir de 5mil pesos.
                             </p>
                         </div>
                     </motion.div>

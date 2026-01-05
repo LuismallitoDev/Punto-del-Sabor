@@ -6,6 +6,7 @@ import { CartProvider } from './context/CartContext';
 import { ToastProvider } from './context/ToastContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
+import { Settings } from './pages/admin/Settings';
 
 // Componente para proteger rutas (Guardian)
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
@@ -40,7 +41,11 @@ export default function App() {
                   <AdminDashboard />
                 </ProtectedRoute>
               } />
-
+              <Route path="/admin/settings" element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              } />
               {/* CUALQUIER OTRA RUTA -> HOME */}
               <Route path="*" element={<Navigate to="/" replace />} />
 
