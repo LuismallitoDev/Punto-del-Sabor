@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, forwardRef } from 'react'; 
 import { motion } from 'framer-motion';
 import { Plus, Flame } from 'lucide-react';
 import { ProductModal } from '../../ui/ProductModal';
 import { ProductDetailsModal } from '../../ui/ProductDetailsModal';
 import { Product } from '../../../types';
-import { formatCurrency } from '../../../utils/format'; 
 
 interface FoodPlateProps {
     product: Product;
     delay?: number;
 }
 
-export function FoodPlate({ product, delay = 0 }: FoodPlateProps) {
+// 2. Envolver todo el componente en forwardRef
+export const FoodPlate = forwardRef<HTMLDivElement, FoodPlateProps>(({ product, delay = 0 }, ref) => {
     const [isBuyModalOpen, setIsBuyModalOpen] = useState(false);
     const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
@@ -29,19 +29,19 @@ export function FoodPlate({ product, delay = 0 }: FoodPlateProps) {
     return (
         <>
             <motion.div
+                ref={ref} // 3. Conectar el ref aquí
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.7, delay, ease: [0.32, 0.72, 0, 1] }}
                 className="flex flex-col items-center group relative will-change-transform"
             >
-                {/* Contenedor Principal */}
+                {/* Contenedor de Imagen */}
                 <div
                     className="relative w-full max-w-[280px] aspect-square mb-6 cursor-pointer"
                     onClick={handleOpenInfo}
                 >
-
-                    {/* Insignia de Popular */}
+                    {/* Insignia Popular */}
                     {isPopular && (
                         <motion.div
                             initial={{ scale: 0, opacity: 0 }}
@@ -54,7 +54,7 @@ export function FoodPlate({ product, delay = 0 }: FoodPlateProps) {
                         </motion.div>
                     )}
 
-                    {/* El Plato Rotatorio */}
+                    {/* Plato Giratorio */}
                     <motion.div
                         whileHover={{ scale: 1.05, rotate: 3 }}
                         transition={{ duration: 0.4, ease: "easeOut" }}
@@ -68,7 +68,7 @@ export function FoodPlate({ product, delay = 0 }: FoodPlateProps) {
                         </div>
                     </motion.div>
 
-                    {/* Botón Dorado (Compra) */}
+                    {/* Botón Flotante */}
                     <motion.button
                         onClick={handleOpenBuy}
                         whileHover={{ scale: 1.1 }}
@@ -77,20 +77,17 @@ export function FoodPlate({ product, delay = 0 }: FoodPlateProps) {
                     >
                         <Plus size={24} strokeWidth={3} />
                     </motion.button>
-
-                    <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[80%] h-8 bg-black/60 blur-xl -z-10 rounded-[100%] transition-transform duration-500 group-hover:scale-110 group-hover:opacity-40" />
                 </div>
 
-                {/* Info Texto */}
+                {/* Textos */}
                 <div className="text-center space-y-2 px-4 cursor-pointer" onClick={handleOpenInfo}>
                     <h3 className="text-2xl font-serif text-gold tracking-wide leading-tight group-hover:text-white transition-colors">{name}</h3>
                     <div className="w-12 h-[1px] bg-gold/30 mx-auto my-2 transition-all duration-300 group-hover:w-20 group-hover:bg-gold" />
                     <p className="text-gray-400 text-sm leading-relaxed max-w-[250px] mx-auto group-hover:text-gray-300 transition-colors line-clamp-2">
                         {description}
                     </p>
-                    {/* USO DE formatCurrency AQUÍ */}
                     <p className="text-gold font-medium mt-2 font-serif text-lg">
-                        ${formatCurrency(price)}
+                        ${price.toLocaleString('es-CO')}
                     </p>
                 </div>
             </motion.div>
@@ -108,4 +105,4 @@ export function FoodPlate({ product, delay = 0 }: FoodPlateProps) {
             />
         </>
     );
-}
+});

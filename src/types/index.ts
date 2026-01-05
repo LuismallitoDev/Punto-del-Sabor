@@ -10,4 +10,5 @@ export interface Product {
     isPopular?: boolean;
     ingredients?: string[];
     calories?: number;
+    active?: boolean;
 }

@@ -10,11 +10,13 @@
     "preview": "npx vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.89.0",
     "framer-motion": "^11.5.4",
     "lucide-react": "0.522.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.5.0",
+    "react-router-dom": "^7.11.0",
     "react-scroll": "^1.9.3",
     "react-zoom-pan-pinch": "^3.7.0"
   },

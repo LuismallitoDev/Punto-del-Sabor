@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
 
 // Definición de un ítem en el carrito
 export interface CartItem {
@@ -29,7 +29,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setCart((prevCart) => {
       // Verificamos si el producto ya existe
       const existingItem = prevCart.find((item) => item.id === product.id);
-      
+
       // Si mandan cantidad (desde el modal), la usamos. Si no, sumamos 1.
       const qtyToAdd = product.quantity || 1;
 
@@ -77,9 +77,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const useCart = () => {
-    const context = useContext(CartContext);
-    if (!context) {
-        throw new Error('useCart debe ser usado dentro de un CartProvider');
-    }
-    return context;
+  const context = useContext(CartContext);
+  if (!context) {
+    throw new Error('useCart debe ser usado dentro de un CartProvider');
+  }
+  return context;
 };
