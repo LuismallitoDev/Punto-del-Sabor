@@ -6,6 +6,10 @@ export interface StoreSettings {
     force_close: boolean;
     high_demand: boolean;
     delay_minutes: number;
+    holiday_mode: boolean;
+    holiday_message: string;
+    holiday_start: string | null; 
+    holiday_end: string | null;
 }
 
 export const useStoreSettings = () => {
@@ -22,15 +26,15 @@ export const useStoreSettings = () => {
 
         fetchSettings();
 
-        // 2. Suscribirse a cambios en vivo (Realtime)
+        // 2. Suscribirse a cambios en vivo (Para sincronizar otras pestañas)
         const channel = supabase
             .channel('store_settings_changes')
             .on(
                 'postgres_changes',
                 { event: 'UPDATE', schema: 'public', table: 'store_settings' },
                 (payload) => {
-                    // Actualizar el estado inmediatamente
-                    setSettings(payload.new as StoreSettings);
+                    // Solo actualizamos si el cambio viene de afuera (para evitar conflictos con el optimista)
+                    setSettings((current) => ({ ...current, ...payload.new } as StoreSettings));
                 }
             )
             .subscribe();
@@ -40,15 +44,28 @@ export const useStoreSettings = () => {
         };
     }, []);
 
-    // Función para que el Admin actualice los valores
+    // 3. Función optimista
     const updateSettings = async (updates: Partial<StoreSettings>) => {
         if (!settings) return;
+
+        // A) COPIA DE SEGURIDAD (Por si falla)
+        const oldSettings = { ...settings };
+
+        // B) ACTUALIZACIÓN VISUAL INMEDIATA (Optimista) 🚀
+        setSettings({ ...settings, ...updates });
+
+        // C) ACTUALIZACIÓN EN BASE DE DATOS
         const { error } = await supabase
             .from('store_settings')
             .update(updates)
             .eq('id', settings.id);
 
-        if (error) console.error("Error actualizando tienda:", error);
+        // D) REVERTIR SI HUBO ERROR (Rollback)
+        if (error) {
+            console.error("Error actualizando tienda:", error);
+            setSettings(oldSettings); // Volvemos al estado anterior
+            alert("No se pudo actualizar el estado. Revisa tu conexión.");
+        }
     };
 
     return { settings, loading, updateSettings };

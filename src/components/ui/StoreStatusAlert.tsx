@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle, Clock, Lock } from 'lucide-react';
+import { AlertTriangle, Clock, Lock, CalendarDays } from 'lucide-react';
 import { useStoreSettings } from '../../hooks/useStoreSettings';
 
 export function StoreStatusAlert() {
@@ -7,51 +7,89 @@ export function StoreStatusAlert() {
 
     if (!settings) return null;
 
-    return (
-        <>
-            <AnimatePresence>
-                {/* NIVEL 1: ALTA DEMANDA (Banner Superior) */}
-                {settings.high_demand && !settings.force_close && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="bg-orange-500/90 backdrop-blur-sm text-black font-bold text-center px-4 py-2 text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-2 sticky top-0 z-[60]"
-                    >
-                        <Clock size={16} className="animate-pulse" />
-                        <span>¡Alta Demanda! Los pedidos pueden tardar aprox. {settings.delay_minutes} min.</span>
-                    </motion.div>
-                )}
+    // --- LÓGICA DE PROGRAMACIÓN ---
+    const isScheduledClosed = () => {
+        if (!settings.holiday_start || !settings.holiday_end) return false;
 
-                {/* NIVEL 2: CIERRE DE EMERGENCIA (Overlay Bloqueante) */}
-                {settings.force_close && (
+        const now = new Date();
+        const start = new Date(settings.holiday_start);
+        const end = new Date(settings.holiday_end);
+
+        // Está cerrado si: AHORA es mayor que INICIO y AHORA es menor que FIN
+        return now >= start && now <= end;
+    };
+
+    // La tienda está en modo "Descanso" si el switch manual está ON 
+    // O si estamos dentro del horario programado.
+    const isHolidayActive = settings.holiday_mode || isScheduledClosed();
+
+    return (
+        <AnimatePresence>
+
+            {/* 1. NIVEL PRIORIDAD: CIERRE DE EMERGENCIA (ROJO) */}
+            {settings.force_close && (
+                <motion.div
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    className="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-8 text-center"
+                >
+                    <div className="bg-[#1a1a1a] border border-red-500/30 p-8 rounded-2xl max-w-md shadow-2xl shadow-red-900/20">
+                        <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6 text-red-500">
+                            <Lock size={32} />
+                        </div>
+                        <h2 className="text-2xl font-serif text-white mb-4">Cerrado Temporalmente</h2>
+                        <p className="text-gray-400">Estamos solucionando unos inconvenientes técnicos.</p>
+                    </div>
+                </motion.div>
+            )}
+
+            {/* 2. NIVEL MEDIO: MODO DESCANSO / PROGRAMADO (AZUL) */}
+            {!settings.force_close && isHolidayActive && (
+                <motion.div
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-8 text-center"
+                >
                     <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-8 text-center"
+                        initial={{ scale: 0.9, y: 20 }}
+                        animate={{ scale: 1, y: 0 }}
+                        className="bg-[#111] border border-blue-500/30 p-10 rounded-2xl max-w-md shadow-2xl shadow-blue-900/20 relative overflow-hidden"
                     >
-                        <motion.div
-                            initial={{ scale: 0.9 }}
-                            animate={{ scale: 1 }}
-                            className="bg-[#1a1a1a] border border-red-500/30 p-8 rounded-2xl max-w-md shadow-2xl shadow-red-900/20"
-                        >
-                            <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6 text-red-500">
-                                <Lock size={32} />
-                            </div>
-                            <h2 className="text-2xl font-serif text-white mb-4">Cerrado Temporalmente</h2>
-                            <p className="text-gray-400 mb-6 leading-relaxed">
-                                Estamos experimentando dificultades técnicas o alta demanda en cocina.
-                                <br />Por calidad, hemos pausado los pedidos momentáneamente.
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500" />
+
+                        <div className="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-6 text-blue-400">
+                            <CalendarDays size={40} />
+                        </div>
+
+                        <h2 className="text-3xl font-serif text-white mb-4">Aviso Importante</h2>
+
+                        <p className="text-gray-300 text-lg mb-8 leading-relaxed font-medium">
+                            "{settings.holiday_message}"
+                        </p>
+
+                        <div className="inline-block px-4 py-2 bg-white/5 rounded-lg border border-white/10 text-xs text-gray-500 uppercase tracking-widest">
+                            Punto del Sabor
+                        </div>
+
+                        {/* Mostrar hasta cuándo si es programado */}
+                        {isScheduledClosed() && settings.holiday_end && (
+                            <p className="mt-4 text-xs text-blue-400/60 font-mono">
+                                Volvemos el: {new Date(settings.holiday_end).toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                             </p>
-                            <div className="inline-flex items-center gap-2 text-red-400 text-xs font-bold uppercase tracking-widest bg-red-500/10 px-4 py-2 rounded-full animate-pulse">
-                                <AlertTriangle size={14} />
-                                No estamos recibiendo pedidos
-                            </div>
-                        </motion.div>
+                        )}
                     </motion.div>
-                )}
-            </AnimatePresence>
-        </>
+                </motion.div>
+            )}
+
+            {/* 3. NIVEL BAJO: ALTA DEMANDA */}
+            {!settings.force_close && !isHolidayActive && settings.high_demand && (
+                <motion.div
+                    initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+                    className="bg-orange-600 text-white font-bold text-center px-4 py-3 text-xs md:text-sm uppercase tracking-widest flex items-center justify-center gap-2 sticky top-0 z-[60] shadow-lg shadow-orange-900/20"
+                >
+                    <Clock size={16} className="animate-pulse" />
+                    <span>¡Alta Demanda! Tiempo de espera aprox: {settings.delay_minutes} min.</span>
+                </motion.div>
+            )}
+
+        </AnimatePresence>
     );
 }

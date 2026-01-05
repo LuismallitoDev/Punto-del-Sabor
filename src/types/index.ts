@@ -3,6 +3,7 @@ import { CartItem } from "../context/CartContext";
 export interface Category {
     id: string;
     name: string;
+    value: string;
     slug: string; // 'papas', 'bebidas', etc.
 }
 

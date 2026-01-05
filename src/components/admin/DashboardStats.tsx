@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
-    BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-    PieChart, Pie, Cell, AreaChart, Area, CartesianGrid
+    BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, CartesianGrid
 } from 'recharts';
 import { Loader2, TrendingUp, DollarSign, ShoppingBag, Calendar, Star } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
