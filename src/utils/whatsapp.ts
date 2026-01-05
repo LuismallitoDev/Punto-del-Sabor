@@ -1,11 +1,5 @@
 import { WHATSAPP_NUMBER } from '../config/constants';
-
-interface CartItem {
-    id: string;
-    name: string;
-    price: number;
-    quantity: number;
-}
+import type { CartItem } from '../context/CartContext';
 
 interface OrderDetails {
     address: string;
@@ -13,12 +7,24 @@ interface OrderDetails {
     notes: string;
 }
 
+// Generador genérico de links de WhatsApp
+export const createWhatsAppLink = (message: string) => {
+    const encodedMessage = encodeURIComponent(message);
+    const number = WHATSAPP_NUMBER || "573043538560";
+    return `https://wa.me/${number}?text=${encodedMessage}`;
+};
+
+// Mensaje para venta mayorista (ProductModal)
+export const getWholesaleMessage = (productName: string) => {
+    return `Hola, estoy interesado en hacer un pedido mayorista de ${productName}. Me gustaría conocer más detalles.`;
+};
+
+// Función principal de envío de pedidos
 export const sendOrderToWhatsapp = (items: CartItem[], details: OrderDetails) => {
     if (items.length === 0) return;
 
     const total = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
-    
     const itemsList = items.map(item => {
         const subtotal = (item.price * item.quantity).toLocaleString('es-CO');
         return `• ${item.quantity}x ${item.name} ($${subtotal})`;
@@ -32,16 +38,7 @@ export const sendOrderToWhatsapp = (items: CartItem[], details: OrderDetails) =>
 
     const totalFormatted = total.toLocaleString('es-CO');
 
-    // 2. Construimos el mensaje como texto normal primero
     const message = `Hola El Punto del Sabor, quiero confirmar el siguiente pedido:\n\n${itemsList}\n\n*TOTAL A PAGAR: $${totalFormatted}*\n\n--------------------------------\n*DATOS DE ENTREGA:*\n${customerInfo}`;
 
-    // 3. LA CLAVE: encodeURIComponent "empaqueta" el texto para que # y & no rompan el link
-    const encodedMessage = encodeURIComponent(message);
-
-    const number = typeof WHATSAPP_NUMBER !== 'undefined' ? WHATSAPP_NUMBER : "573233353753";
-
-    // 4. Creamos la URL segura
-    const url = `https://wa.me/${number}?text=${encodedMessage}`;
-
-    window.open(url, '_blank');
+    window.open(createWhatsAppLink(message), '_blank');
 };

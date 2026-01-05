@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Flame } from 'lucide-react'; // <--- 1. IMPORTAMOS FLAME
+import { Plus, Flame } from 'lucide-react';
 import { ProductModal } from '../../ui/ProductModal';
 import { ProductDetailsModal } from '../../ui/ProductDetailsModal';
 import { Product } from '../../../types';
+import { formatCurrency } from '../../../utils/format'; 
 
 interface FoodPlateProps {
     product: Product;
@@ -23,7 +24,7 @@ export function FoodPlate({ product, delay = 0 }: FoodPlateProps) {
         setIsBuyModalOpen(true);
     };
 
-    const { name, description, price, image, isPopular } = product; 
+    const { name, description, price, image, isPopular } = product;
 
     return (
         <>
@@ -40,15 +41,15 @@ export function FoodPlate({ product, delay = 0 }: FoodPlateProps) {
                     onClick={handleOpenInfo}
                 >
 
-                    {/* --- 2. INSIGNIA DE POPULAR (NUEVO) --- */}
+                    {/* Insignia de Popular */}
                     {isPopular && (
                         <motion.div
                             initial={{ scale: 0, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
-                            transition={{ delay: delay + 0.5, type: "spring" }} // Aparece con un pequeño rebote
+                            transition={{ delay: delay + 0.5, type: "spring" }}
                             className="absolute top-0 right-0 z-40 bg-gold text-black text-[10px] font-bold px-3 py-1.5 rounded-full flex items-center gap-1 shadow-lg shadow-gold/20 translate-x-2 -translate-y-2"
                         >
-                            <Flame size={12} fill="black" className="animate-pulse" /> {/* Llama palpitante */}
+                            <Flame size={12} fill="black" className="animate-pulse" />
                             <span className="tracking-widest">POPULAR</span>
                         </motion.div>
                     )}
@@ -87,8 +88,9 @@ export function FoodPlate({ product, delay = 0 }: FoodPlateProps) {
                     <p className="text-gray-400 text-sm leading-relaxed max-w-[250px] mx-auto group-hover:text-gray-300 transition-colors line-clamp-2">
                         {description}
                     </p>
+                    {/* USO DE formatCurrency AQUÍ */}
                     <p className="text-gold font-medium mt-2 font-serif text-lg">
-                        ${price.toLocaleString('es-CO')}
+                        ${formatCurrency(price)}
                     </p>
                 </div>
             </motion.div>

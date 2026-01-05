@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Trash2, ChevronRight, ShoppingBag, ChevronDown, ChevronUp } from 'lucide-react'; // Importamos ChevronUp
+import { X, Trash2, ChevronRight, ShoppingBag, ChevronDown, ChevronUp } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { sendOrderToWhatsapp } from '../../utils/whatsapp';
 import { useToast } from '../../context/ToastContext';
 import { useBlockScroll } from '../../utils/useBlockScroll';
+import { formatCurrency } from '../../utils/format';
 
 interface CartSidebarProps {
     isOpen: boolean;
@@ -13,18 +14,18 @@ interface CartSidebarProps {
 
 export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     const { cart, removeFromCart, totalPrice } = useCart();
-    const { addToast } = useToast(); // <--- Usar hook
+    const { addToast } = useToast();
+
     // Estados del formulario
     const [address, setAddress] = useState('');
     const [notes, setNotes] = useState('');
 
-    // --- LÓGICA DEL DROPDOWN PERSONALIZADO ---
+    // Lógica del Dropdown
     const [paymentMethod, setPaymentMethod] = useState('Efectivo');
-    const [isPaymentOpen, setIsPaymentOpen] = useState(false); // Para saber si el menú está abierto
+    const [isPaymentOpen, setIsPaymentOpen] = useState(false);
     const paymentOptions = ["Efectivo", "Nequi", "DaviPlata", "Bancolombia"];
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    // Cerrar el dropdown si clicamos fuera
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -34,24 +35,17 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
-    // ------------------------------------------
 
-    // Bloquear scroll
     useBlockScroll(isOpen);
 
     const handleConfirm = () => {
         if (!address.trim()) {
-            // REEMPLAZO DEL ALERT
             addToast("Por favor ingresa tu dirección de entrega", "error");
-
-            // Opcional: Enfocar el input
             document.querySelector('input')?.focus();
             return;
         }
 
         sendOrderToWhatsapp(cart, { address, paymentMethod, notes });
-
-        // Mensaje de éxito antes de irse (aunque WhatsApp abre en otra pestaña)
         addToast("¡Pedido procesado! Redirigiendo a WhatsApp...", "success");
         onClose();
     };
@@ -65,21 +59,11 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
         <AnimatePresence>
             {isOpen && (
                 <>
-                    {/* ESTILOS CSS INYECTADOS PARA EL SCROLLBAR */}
                     <style>{`
-                        .custom-scrollbar::-webkit-scrollbar {
-                            width: 6px;
-                        }
-                        .custom-scrollbar::-webkit-scrollbar-track {
-                            background: rgba(255, 255, 255, 0.05);
-                        }
-                        .custom-scrollbar::-webkit-scrollbar-thumb {
-                            background: rgba(197, 157, 95, 0.4); /* Color Oro sutil */
-                            border-radius: 10px;
-                        }
-                        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                            background: rgba(197, 157, 95, 0.8); /* Oro más fuerte al hover */
-                        }
+                        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+                        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
+                        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(197, 157, 95, 0.4); border-radius: 10px; }
+                        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(197, 157, 95, 0.8); }
                     `}</style>
 
                     {/* Backdrop */}
@@ -106,7 +90,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                             </button>
                         </div>
 
-                        {/* 2. LISTA DE PRODUCTOS (Con Scrollbar Custom) */}
+                        {/* 2. LISTA DE PRODUCTOS */}
                         <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
                             {cart.length === 0 ? (
                                 <div className="text-center text-gray-500 py-10">
@@ -122,12 +106,14 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                                             <div>
                                                 <p className="text-white font-medium">{item.name}</p>
                                                 <p className="text-sm text-gray-400">
-                                                    {item.quantity} x ${item.price.toLocaleString('es-CO')}
+                                                    {/* USO DE formatCurrency */}
+                                                    {item.quantity} x ${formatCurrency(item.price)}
                                                 </p>
                                             </div>
                                             <div className="flex items-center gap-3">
                                                 <span className="text-gold font-bold">
-                                                    ${(item.price * item.quantity).toLocaleString('es-CO')}
+                                                    {/* USO DE formatCurrency (Subtotal) */}
+                                                    ${formatCurrency(item.price * item.quantity)}
                                                 </span>
                                                 <button onClick={() => removeFromCart(item.id)} className="text-gray-600 hover:text-red-500 transition-colors">
                                                     <Trash2 size={16} />
@@ -139,7 +125,8 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                                     <div className="flex justify-between items-center pt-4 border-t border-white/10 mt-4">
                                         <span className="text-gray-400 uppercase tracking-widest text-xs">Total Estimado</span>
                                         <span className="text-2xl font-serif text-gold font-bold">
-                                            ${totalPrice.toLocaleString('es-CO')}
+                                            {/* USO DE formatCurrency (Total) */}
+                                            ${formatCurrency(totalPrice)}
                                         </span>
                                     </div>
                                 </div>
@@ -163,11 +150,10 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                                         />
                                     </div>
 
-                                    {/* --- DROPDOWN PERSONALIZADO --- */}
+                                    {/* DROPDOWN PERSONALIZADO */}
                                     <div className="space-y-2" ref={dropdownRef}>
                                         <label className="text-xs text-gray-400 uppercase">Método de Pago</label>
                                         <div className="relative">
-                                            {/* Botón Trigger */}
                                             <button
                                                 onClick={() => setIsPaymentOpen(!isPaymentOpen)}
                                                 className={`w-full bg-white/5 border rounded p-3 text-white flex justify-between items-center transition-all duration-300
@@ -175,15 +161,9 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                                                 `}
                                             >
                                                 <span>{paymentMethod}</span>
-                                                {/* Flechas dinámicas */}
-                                                {isPaymentOpen ? (
-                                                    <ChevronUp size={18} className="text-gold" />
-                                                ) : (
-                                                    <ChevronDown size={18} className="text-gray-400" />
-                                                )}
+                                                {isPaymentOpen ? <ChevronUp size={18} className="text-gold" /> : <ChevronDown size={18} className="text-gray-400" />}
                                             </button>
 
-                                            {/* Lista Desplegable */}
                                             <AnimatePresence>
                                                 {isPaymentOpen && (
                                                     <motion.ul
@@ -212,7 +192,6 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                                             </AnimatePresence>
                                         </div>
                                     </div>
-                                    {/* ----------------------------- */}
 
                                     <div className="space-y-2">
                                         <label className="text-xs text-gray-400 uppercase">Observaciones</label>

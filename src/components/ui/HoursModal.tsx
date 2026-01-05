@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Clock, Calendar } from 'lucide-react';
+import { useBusinessHours } from '../../utils/useBusinessHours';
 
 interface HoursModalProps {
     isOpen: boolean;
@@ -8,44 +8,19 @@ interface HoursModalProps {
 }
 
 export function HoursModal({ isOpen, onClose }: HoursModalProps) {
-    const [isOpenNow, setIsOpenNow] = useState(false);
-
-    // --- LÓGICA DE APERTURA ---
-    // Horario: Lunes a Domingo de 4:00 PM (16:00) a 10:00 PM (22:00)
-    useEffect(() => {
-        const checkTime = () => {
-            const now = new Date();
-            const hour = now.getHours(); // 0 - 23
-
-            // Abierto si la hora es mayor/igual a 16 (4PM) Y menor a 22 (10PM)
-            // Es decir, de 16:00 a 21:59
-            const isOpen = hour >= 16 && hour < 22;
-
-            setIsOpenNow(isOpen);
-        };
-
-        checkTime();
-        // Revisar cada minuto por si cambia mientras el usuario tiene la web abierta
-        const interval = setInterval(checkTime, 60000);
-        return () => clearInterval(interval);
-    }, []);
+    const { isOpenNow } = useBusinessHours();
 
     return (
         <AnimatePresence>
             {isOpen && (
                 <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                     className="fixed inset-0 z-[150] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
                     onClick={onClose}
                 >
-                    {/* Contenedor del Modal */}
                     <motion.div
-                        initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                        animate={{ scale: 1, opacity: 1, y: 0 }}
-                        exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                        onClick={(e) => e.stopPropagation()} // Evitar cerrar al hacer click dentro
+                        initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                        onClick={(e) => e.stopPropagation()}
                         className="bg-[#111] border border-white/10 w-full max-w-md rounded-xl shadow-2xl overflow-hidden relative"
                     >
                         {/* Cabecera */}
@@ -61,7 +36,6 @@ export function HoursModal({ isOpen, onClose }: HoursModalProps) {
 
                         {/* Cuerpo */}
                         <div className="p-8 flex flex-col items-center text-center space-y-8">
-
                             {/* INDICADOR DE ESTADO (SEMÁFORO) */}
                             <div className={`
                                 flex flex-col items-center justify-center w-40 h-40 rounded-full border-4 
@@ -80,8 +54,7 @@ export function HoursModal({ isOpen, onClose }: HoursModalProps) {
                                     </span>
                                 )}
                             </div>
-
-                            {/* TABLA DE HORARIOS */}
+                            {/* ... Resto de la tabla de horarios igual ... */}
                             <div className="w-full bg-white/5 rounded-lg p-6 border border-white/5 space-y-4">
                                 <div className="flex items-center gap-2 text-gold mb-2 justify-center">
                                     <Calendar size={16} />
@@ -94,12 +67,8 @@ export function HoursModal({ isOpen, onClose }: HoursModalProps) {
                                         <span className="block text-white font-bold">4:00 PM - 10:00 PM</span>
                                     </div>
                                 </div>
-
-                                <p className="text-xs text-gray-500 pt-2 leading-relaxed">
-                                    * Horarios sujetos a cambios en días festivos.
-                                </p>
+                                <p className="text-xs text-gray-500 pt-2 leading-relaxed">* Horarios sujetos a cambios en días festivos.</p>
                             </div>
-
                         </div>
                     </motion.div>
                 </motion.div>

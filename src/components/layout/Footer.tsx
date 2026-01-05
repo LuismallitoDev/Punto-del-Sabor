@@ -1,34 +1,18 @@
-import { useState, useEffect } from 'react'; // <--- Importamos useEffect
+import { useState } from 'react';
 import { Instagram, Facebook, MapPin, Clock, Phone } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 import LogoTipo from "../../assets/Logotipo_Transparente.png";
 import { WHATSAPP_NUMBER } from '../../config/constants';
 import { LegalModal } from '../ui/LegalModal';
 import { legalContent } from '../../data/legalInfo';
+import { useBusinessHours } from '../../utils/useBusinessHours';
 
 export function Footer() {
     const [legalModalOpen, setLegalModalOpen] = useState(false);
     const [legalType, setLegalType] = useState<'privacy' | 'terms' | null>(null);
-    
-    // 1. ESTADO PARA SABER SI ESTÁ ABIERTO
-    const [isOpenNow, setIsOpenNow] = useState(false);
 
-    // 2. LÓGICA DE TIEMPO (Igual a la del Modal)
-    useEffect(() => {
-        const checkTime = () => {
-            const now = new Date();
-            const hour = now.getHours(); // Hora actual (0-23)
-            
-            // Abierto si la hora es mayor o igual a 16 (4 PM) Y menor a 22 (10 PM)
-            const isOpen = hour >= 16 && hour < 22;
-            
-            setIsOpenNow(isOpen);
-        };
-
-        checkTime(); // Chequear al cargar
-        const interval = setInterval(checkTime, 60000); // Re-chequear cada minuto
-        return () => clearInterval(interval);
-    }, []);
+    // Usamos el Custom Hook para saber si está abierto
+    const { isOpenNow } = useBusinessHours();
 
     const openLegal = (type: 'privacy' | 'terms') => {
         setLegalType(type);
@@ -46,9 +30,11 @@ export function Footer() {
 
                 <div className="container mx-auto px-6 relative z-10">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 mb-16">
+                        {/* ... (COLUMNA 1 Y 2 SIN CAMBIOS) ... */}
 
                         {/* COLUMNA 1: MARCA */}
                         <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-4">
+                            {/* ...código existente... */}
                             <div className="w-32 opacity-90 mb-2">
                                 <img src={LogoTipo} alt="El Punto del Sabor" className="w-full h-auto" />
                             </div>
@@ -67,6 +53,7 @@ export function Footer() {
 
                         {/* COLUMNA 2: CONTACTO */}
                         <div className="flex flex-col items-center text-center space-y-6">
+                            {/* ...código existente... */}
                             <h3 className="text-gold font-serif tracking-widest uppercase text-sm font-bold">
                                 Visítanos
                             </h3>
@@ -99,7 +86,7 @@ export function Footer() {
                                 </div>
                             </div>
 
-                            {/* 3. INDICADOR DINÁMICO (Abierto / Cerrado) */}
+                            {/* INDICADOR DINÁMICO (Usando el valor del Hook) */}
                             {isOpenNow ? (
                                 <div className="flex items-center gap-2 text-green-500 text-xs font-bold tracking-wider uppercase border border-green-500/20 bg-green-500/10 px-3 py-1 rounded-full animate-pulse">
                                     <Clock size={12} />
@@ -112,7 +99,6 @@ export function Footer() {
                                 </div>
                             )}
 
-                            {/* --- BOTÓN WHATSAPP --- */}
                             <button
                                 onClick={handleWhatsAppClick}
                                 className="group flex items-center gap-2 bg-[#25D366] hover:bg-[#128C7E] text-black hover:text-white px-5 py-2.5 rounded-full font-bold uppercase tracking-widest text-xs transition-all duration-300 shadow-[0_0_15px_rgba(37,211,102,0.2)] hover:shadow-[0_0_20px_rgba(37,211,102,0.4)] mt-2"
@@ -127,18 +113,8 @@ export function Footer() {
                     <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-600 uppercase tracking-wider">
                         <p>&copy; 2026 El Punto del Sabor. Todos los derechos reservados.</p>
                         <div className="flex gap-6">
-                            <button
-                                onClick={() => openLegal('privacy')}
-                                className="hover:text-gold transition-colors"
-                            >
-                                Privacidad
-                            </button>
-                            <button
-                                onClick={() => openLegal('terms')}
-                                className="hover:text-gold transition-colors"
-                            >
-                                Términos
-                            </button>
+                            <button onClick={() => openLegal('privacy')} className="hover:text-gold transition-colors">Privacidad</button>
+                            <button onClick={() => openLegal('terms')} className="hover:text-gold transition-colors">Términos</button>
                         </div>
                     </div>
                 </div>

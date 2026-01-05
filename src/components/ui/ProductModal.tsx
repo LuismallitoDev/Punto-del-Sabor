@@ -1,12 +1,17 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Minus, Plus, ShoppingBag } from 'lucide-react';
+import { FaWhatsapp } from 'react-icons/fa';
+
+// Contextos y Tipos
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../context/ToastContext';
-import { WHATSAPP_NUMBER } from '../../config/constants';
-import { FaWhatsapp } from 'react-icons/fa';
 import { Product } from '../../types';
+
+// Hooks y Utilidades Refactorizadas
 import { useBlockScroll } from '../../utils/useBlockScroll';
+import { formatCurrency } from '../../utils/format';
+import { createWhatsAppLink, getWholesaleMessage } from '../../utils/whatsapp';
 
 interface ProductModalProps {
     isOpen: boolean;
@@ -18,14 +23,16 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
     const [quantity, setQuantity] = useState(1);
     const { addToCart } = useCart();
     const { addToast } = useToast();
+
+    // Bloquear scroll al abrir
     useBlockScroll(isOpen);
 
+    // Resetear cantidad al abrir
     useEffect(() => {
         if (isOpen) setQuantity(1);
     }, [isOpen]);
 
     if (!product) return null;
-
 
     const handleIncrement = () => {
         if (quantity < 30) setQuantity(prev => prev + 1);
@@ -37,19 +44,21 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
     };
 
     const handleAddToCart = () => {
-        // Añadimos al carrito con la cantidad seleccionada
         addToCart({
             id: product.id,
             name: product.name,
             price: product.price,
-            quantity: quantity 
+            quantity: quantity
         });
         addToast(`Añadiste ${quantity}x ${product.name} al pedido`, "success");
         onClose();
     };
 
+    // Lógica refactorizada de WhatsApp
     const handleWhatsAppClick = () => {
-        window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=Hola, estoy interesado en hacer un pedido mayorista de ${product.name}...`, '_blank');
+        const message = getWholesaleMessage(product.name);
+        const link = createWhatsAppLink(message);
+        window.open(link, '_blank');
     }
 
     const totalPrice = product.price * quantity;
@@ -98,10 +107,10 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
                             {/* Info del Producto */}
                             <div className="mb-auto">
                                 <h2 className="text-2xl md:text-3xl font-serif text-gold mb-2">{product.name}</h2>
-                                <p className="text-xl font-bold text-white mb-4">${product.price.toLocaleString('es-CO')}</p>
+                                {/* Uso de formatCurrency */}
+                                <p className="text-xl font-bold text-white mb-4">${formatCurrency(product.price)}</p>
                                 <div className="w-12 h-0.5 bg-gold/30 mb-4"></div>
                                 <p className="text-gray-300 leading-relaxed">{product.description}</p>
-                                {/* Puedes añadir aquí más detalles si los tienes en tu objeto producto, como ingredientes, etc. */}
                             </div>
 
                             {/* Controles de Cantidad y Botones */}
@@ -135,10 +144,11 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
                                     className="w-full bg-gold text-black font-bold py-4 rounded-lg uppercase tracking-widest hover:bg-white transition-all duration-300 flex items-center justify-center gap-3 shadow-lg shadow-gold/20 active:scale-95"
                                 >
                                     <ShoppingBag size={20} />
-                                    <span>Agregar ∙ ${totalPrice.toLocaleString('es-CO')}</span>
+                                    {/* Uso de formatCurrency */}
+                                    <span>Agregar ∙ ${formatCurrency(totalPrice)}</span>
                                 </button>
 
-                                {/* Disclaimer WhatsApp */}
+                                {/* Disclaimer WhatsApp (Venta Mayorista) */}
                                 {quantity >= 30 && (
                                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                                         <button onClick={handleWhatsAppClick} className="w-full flex flex-col items-center gap-2 p-4 bg-[#25D366]/10 border border-[#25D366]/30 rounded-lg hover:bg-[#25D366]/20 transition-colors group cursor-pointer text-left">
