@@ -82,7 +82,7 @@ export function ProductDetailsModal({ isOpen, onClose, product }: ProductDetails
                                 {/* Precio */}
                                 <div className="text-right ml-2">
                                     <p className="text-2xl font-bold text-gold">${product.price.toLocaleString('es-CO')}</p>
-                                    {product.calories && (
+                                    {typeof product.calories === 'number' && (
                                         <div className="flex items-center gap-1 text-gray-400 text-xs mt-2">
                                             <Flame size={12} className="text-orange-500" />
                                             <span>~{product.calories} kcal</span>

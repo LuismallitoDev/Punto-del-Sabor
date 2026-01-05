@@ -1,27 +1,46 @@
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle, Clock, Lock, CalendarDays } from 'lucide-react';
+import { Clock, Lock, CalendarDays } from 'lucide-react';
 import { useStoreSettings } from '../../hooks/useStoreSettings';
 
 export function StoreStatusAlert() {
     const { settings } = useStoreSettings();
+    const [isScheduledActive, setIsScheduledActive] = useState(false);
+
+    // ESCUCHA EL TIEMPO EN VIVO ⏱️
+    useEffect(() => {
+        if (!settings?.holiday_start || !settings?.holiday_end) {
+            setIsScheduledActive(false);
+            return;
+        }
+
+        const checkTime = () => {
+            const now = new Date().getTime(); // Hora actual en milisegundos
+            const start = new Date(settings.holiday_start ?? '').getTime();
+            const end = new Date(settings.holiday_end ?? '').getTime();
+
+            // Debug en consola para verificar (borrar luego)
+            // console.log("Ahora:", new Date(now), "Inicio:", new Date(start), "Fin:", new Date(end));
+
+            // Activamos si AHORA está entre INICIO y FIN
+            const isActive = now >= start && now <= end;
+            setIsScheduledActive(isActive);
+        };
+
+        // 1. Revisar inmediatamente
+        checkTime();
+
+        // 2. Revisar cada 5 segundos automáticamente
+        const interval = setInterval(checkTime, 5000);
+
+        return () => clearInterval(interval);
+    }, [settings]); // Se reinicia si cambian los ajustes
 
     if (!settings) return null;
 
-    // --- LÓGICA DE PROGRAMACIÓN ---
-    const isScheduledClosed = () => {
-        if (!settings.holiday_start || !settings.holiday_end) return false;
-
-        const now = new Date();
-        const start = new Date(settings.holiday_start);
-        const end = new Date(settings.holiday_end);
-
-        // Está cerrado si: AHORA es mayor que INICIO y AHORA es menor que FIN
-        return now >= start && now <= end;
-    };
-
     // La tienda está en modo "Descanso" si el switch manual está ON 
-    // O si estamos dentro del horario programado.
-    const isHolidayActive = settings.holiday_mode || isScheduledClosed();
+    // O si el cronómetro dice que estamos en horario programado.
+    const isHolidayActive = settings.holiday_mode || isScheduledActive;
 
     return (
         <AnimatePresence>
@@ -70,7 +89,7 @@ export function StoreStatusAlert() {
                         </div>
 
                         {/* Mostrar hasta cuándo si es programado */}
-                        {isScheduledClosed() && settings.holiday_end && (
+                        {isScheduledActive && settings.holiday_end && (
                             <p className="mt-4 text-xs text-blue-400/60 font-mono">
                                 Volvemos el: {new Date(settings.holiday_end).toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                             </p>
