@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, Clock, Lock } from 'lucide-react';
-import { useStoreSettings } from '../../utils/useStoreSettings';
+import { useStoreSettings } from '../../hooks/useStoreSettings';
 
 export function StoreStatusAlert() {
     const { settings } = useStoreSettings();

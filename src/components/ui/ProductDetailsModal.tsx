@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Tag, ChefHat, Wheat, Flame } from 'lucide-react';
-import { useBlockScroll } from '../../utils/useBlockScroll';
+import { useBlockScroll } from '../../hooks/useBlockScroll';
 import { Product } from '../../types';
 
 interface ProductDetailsModalProps {

@@ -1,10 +1,10 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Loader2, Save } from 'lucide-react';
 import { Product } from '../../types';
-import { useBlockScroll } from '../../utils/useBlockScroll';
+import { useBlockScroll } from '../../hooks/useBlockScroll';
 
 // Importamos las piezas separadas
-import { useProductForm } from '../../utils/useProductForm';
+import { useProductForm } from '../../hooks/useProductForm';
 import { ImageUploader } from './ImageUploader'; // Asumiendo que los pones en la misma carpeta o ajusta ruta
 import { CategoryDropdown } from './CategoryDropdown';
 

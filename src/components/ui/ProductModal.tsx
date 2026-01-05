@@ -9,7 +9,7 @@ import { useToast } from '../../context/ToastContext';
 import { Product } from '../../types';
 
 // Hooks y Utilidades Refactorizadas
-import { useBlockScroll } from '../../utils/useBlockScroll';
+import { useBlockScroll } from '../../hooks/useBlockScroll';
 import { formatCurrency } from '../../utils/format';
 import { createWhatsAppLink, getWholesaleMessage } from '../../utils/whatsapp';
 

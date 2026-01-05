@@ -8,7 +8,7 @@ import { CartSidebar } from './CartSidebar';
 import { InstallationsGallery } from '../ui/InstallationsGallery';
 import { HoursModal } from '../ui/HoursModal';
 import { WHATSAPP_NUMBER } from '../../config/constants';
-import { useBlockScroll } from '../../utils/useBlockScroll';
+import { useBlockScroll } from '../../hooks/useBlockScroll';
 export function Navbar() {
     // Estado para el menú izquierdo (Hamburguesa)
     const [isMenuOpen, setIsMenuOpen] = useState(false);

@@ -1,9 +1,9 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, QrCode, Download,  } from 'lucide-react';
+import { X, QrCode, Download, } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import jsPDF from 'jspdf';
-import { useBlockScroll } from '../../utils/useBlockScroll';
+import { useBlockScroll } from '../../hooks/useBlockScroll';
 
 interface QRGeneratorModalProps {
     isOpen: boolean;

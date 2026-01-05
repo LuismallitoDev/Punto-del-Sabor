@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Clock, Calendar } from 'lucide-react';
-import { useBusinessHours } from '../../utils/useBusinessHours';
+import { useBusinessHours } from '../../hooks/useBusinessHours';
 
 interface HoursModalProps {
     isOpen: boolean;

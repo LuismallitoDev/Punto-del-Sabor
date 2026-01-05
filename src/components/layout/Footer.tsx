@@ -5,7 +5,7 @@ import LogoTipo from "../../assets/Logotipo_Transparente.png";
 import { WHATSAPP_NUMBER } from '../../config/constants';
 import { LegalModal } from '../ui/LegalModal';
 import { legalContent } from '../../data/legalInfo';
-import { useBusinessHours } from '../../utils/useBusinessHours';
+import { useBusinessHours } from '../../hooks/useBusinessHours';
 
 export function Footer() {
     const [legalModalOpen, setLegalModalOpen] = useState(false);

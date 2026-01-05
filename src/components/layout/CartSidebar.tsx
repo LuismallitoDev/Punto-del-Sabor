@@ -4,7 +4,7 @@ import { X, Trash2, ChevronRight, ShoppingBag, ChevronDown, ChevronUp, Loader2 }
 import { useCart } from '../../context/CartContext';
 import { sendOrderToWhatsapp } from '../../utils/whatsapp';
 import { useToast } from '../../context/ToastContext';
-import { useBlockScroll } from '../../utils/useBlockScroll';
+import { useBlockScroll } from '../../hooks/useBlockScroll';
 import { formatCurrency } from '../../utils/format';
 import { supabase } from '../../lib/supabase'; // <--- 1. Importante: Conexión a BD
 
@@ -14,12 +14,12 @@ interface CartSidebarProps {
 }
 
 export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
-    const { cart, removeFromCart, totalPrice } = useCart(); 
+    const { cart, removeFromCart, totalPrice } = useCart();
     const { addToast } = useToast();
 
     // Estados del formulario
-    const [name, setName] = useState('');      
-    const [phone, setPhone] = useState('');     
+    const [name, setName] = useState('');
+    const [phone, setPhone] = useState('');
     const [address, setAddress] = useState('');
     const [notes, setNotes] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);

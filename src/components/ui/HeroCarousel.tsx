@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-scroll';
-import { useCarousel } from '../../utils/useCarousel'; 
+import { useCarousel } from '../../hooks/useCarousel';
 
 import HeroImage1 from '../../assets/negocio/Negocio_7.jpeg';
 import HeroImage2 from '../../assets/negocio/Negocio_1.jpeg';

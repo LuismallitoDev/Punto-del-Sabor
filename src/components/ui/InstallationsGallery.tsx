@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
-import { useCarousel } from '../../utils/useCarousel'; 
+import { useCarousel } from '../../hooks/useCarousel';
 
 import Foto1 from '../../assets/negocio/Negocio_1.jpeg';
 import Foto2 from '../../assets/negocio/Negocio_2.jpeg';

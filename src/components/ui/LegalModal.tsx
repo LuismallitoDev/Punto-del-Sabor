@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShieldCheck, FileText } from 'lucide-react';
-import { useBlockScroll } from '../../utils/useBlockScroll';
+import { useBlockScroll } from '../../hooks/useBlockScroll';
 
 interface LegalModalProps {
     isOpen: boolean;

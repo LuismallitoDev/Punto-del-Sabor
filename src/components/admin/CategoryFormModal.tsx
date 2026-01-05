@@ -4,7 +4,7 @@ import { X, Loader2, Save } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../../context/ToastContext';
 import { Category } from '../../types';
-import { useBlockScroll } from '../../utils/useBlockScroll';
+import { useBlockScroll } from '../../hooks/useBlockScroll';
 
 interface CategoryFormModalProps {
     isOpen: boolean;
