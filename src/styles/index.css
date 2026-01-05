@@ -54,7 +54,6 @@ h6 {
 .will-change-transform {
   will-change: transform, opacity;
   transform: translateZ(0);
-  /* Hack para forzar aceleración de hardware */
   backface-visibility: hidden;
 }
 
@@ -62,6 +61,5 @@ h6 {
 @media (max-width: 768px) {
   .bg-noise {
     opacity: 0.15 !important;
-    /* Menos opacidad = menos cálculos de mezcla */
   }
 }

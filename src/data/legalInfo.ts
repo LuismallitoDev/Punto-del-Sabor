@@ -40,6 +40,10 @@ export const legalContent = {
 
       <h3 class="text-gold font-bold mb-2">6. Imágenes de Referencia</h3>
       <p class="mb-4">Las fotografías presentadas en este menú digital son de carácter <strong>ilustrativo y referencial</strong>. Aunque nos esforzamos por representar nuestros alimentos con la mayor fidelidad posible, la presentación final, emplatado o guarniciones pueden variar. El producto que usted recibirá corresponderá estrictamente a lo detallado en la <strong>descripción escrita</strong> e ingredientes listados en cada ítem.</p>
+
+      <h3 class="text-gold font-bold mb-2">7. Domicilios y Cobertura</h3>
+      <p class="mb-4">El valor del servicio de domicilio <strong>no está incluido</strong> en el precio de los productos. Para entregas fuera del barrio <strong>Don Carmelo</strong>, la tarifa base inicia desde los <strong>$5.000 COP</strong>. El costo final del domicilio será calculado y acordado mutuamente a través del chat de WhatsApp, dependiendo de la distancia exacta y la zona de entrega.</p>
+      <p class="mb-4"><strong>Cobertura:</strong> Limitamos nuestros servicios al perímetro urbano de Valledupar. No realizamos entregas en zonas rurales o municipios aledaños, salvo excepciones de pedidos mayoristas que cuenten con la debida antelación y validación logística por parte de la administración.</p>
     `
   }
 };

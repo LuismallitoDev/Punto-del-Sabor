@@ -5,16 +5,8 @@ import { useCart } from '../../context/CartContext';
 import { useToast } from '../../context/ToastContext';
 import { WHATSAPP_NUMBER } from '../../config/constants';
 import { FaWhatsapp } from 'react-icons/fa';
-
-// Definimos la interfaz del producto base (debe coincidir con tus datos en products.ts)
-export interface Product {
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-    image: string;
-    category?: string;
-}
+import { Product } from '../../types';
+import { useBlockScroll } from '../../utils/useBlockScroll';
 
 interface ProductModalProps {
     isOpen: boolean;
@@ -26,6 +18,8 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
     const [quantity, setQuantity] = useState(1);
     const { addToCart } = useCart();
     const { addToast } = useToast();
+    useBlockScroll(isOpen);
+
     useEffect(() => {
         if (isOpen) setQuantity(1);
     }, [isOpen]);

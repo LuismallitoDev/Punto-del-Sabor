@@ -6,6 +6,8 @@ export interface Product {
     description: string;
     price: number;
     category: string;
-    image: string; // Ahora es un string (URL/Path)
+    image: string; 
     isPopular?: boolean;
+    ingredients?: string[];
+    calories?: number;
 }

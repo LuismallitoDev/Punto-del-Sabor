@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShieldCheck, FileText } from 'lucide-react';
+import { useBlockScroll } from '../../utils/useBlockScroll';
 
 interface LegalModalProps {
     isOpen: boolean;
@@ -9,6 +10,8 @@ interface LegalModalProps {
 }
 
 export function LegalModal({ isOpen, onClose, type, data }: LegalModalProps) {
+    useBlockScroll(isOpen);
+
     if (!data) return null;
 
     return (

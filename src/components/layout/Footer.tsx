@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'; // <--- Importamos useEffect
+import { useState, useEffect } from 'react'; // <--- Importamos useEffect
 import { Instagram, Facebook, MapPin, Clock, Phone } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 import LogoTipo from "../../assets/Logotipo_Transparente.png";
